@@ -9,7 +9,6 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/rxjs/2.2.26/rx.coincidence.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/rxjs/2.2.26/rx.binding.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/rxjs/2.2.26/rx.time.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/rxjs-dom/2.0.7/rx.dom.js"></script>
 
     <title>Click Example</title>
 
@@ -18,63 +17,60 @@
             let button = document.querySelector('.this');
             let clickStream = Rx.Observable.fromEvent(button, 'click');
 
-            let multiClickStream = clickStream
-                .buffer(() => {
-                    return clickStream.throttle(250);
-                })
-                .map((list) => {
-                    return list.length;
-                })
-                .filter((n) => {
-                    return n >= 2;
-                });
-
             let singleClickStream = clickStream
                 .buffer(() => {
-                    return clickStream.throttle(250);
+                    return clickStream.throttle(250)
                 })
                 .map((list) => {
-                    return list.length;
+                    return list.length
                 })
                 .filter((n) => {
-                    return n === 1;
+                    return n === 1
+                });
+
+            let multiClickStream = clickStream
+                .buffer(() => {
+                    return clickStream.throttle(250)
+                })
+                .map((list) => {
+                    return list.length
+                })
+                .filter((n) => {
+                    return n >= 2
                 });
 
             singleClickStream.subscribe(() => {
-                document.querySelector('h2').textContent = '1 click';
+                document.querySelector('h2').textContent = '1 click'
             });
+
             multiClickStream.subscribe((numclicks) => {
-                document.querySelector('h2').textContent = '' + numclicks + ' clicks';
+                document.querySelector('h2').textContent = '' + numclicks + ' clicks'
             });
+
             Rx.Observable.merge(singleClickStream, multiClickStream)
                 .throttle(1000)
                 .subscribe(() => {
-                    document.querySelector('h2').textContent = '0 clicks';
+                    document.querySelector('h2').textContent = '0 clicks'
                 });
-
         });
     </script>
 
 </head>
 
 <body>
-<br/>
-<table width="80%">
-    <tr>
-        <td>
-            <div class="row">
-                <div class="col-4 text-center">
-                    <button class="this">Click me!</button>
+<div class="container">
+    <h1>Click Example</h1>
+    <div class="row-fluid">
+        <form role="form">
+            <div class="form-group">
+                <input type="button" id="button" class="this" value="Click me!">
                 </div>
-                <div class="col-8">
-                    <div class="row">
-                        <div class="col-4 text-right"><h3>Number of clicks:</h3></div>
-                        <div class="col-4 text-left"><h2>0 clicks</h2></div>
-                    </div>
-                </div>
-            </div>
-        </td>
-    </tr>
-</table>
+        </form>
+        <div class="row-fluid">
+            Number of clicks: <h2>0 clicks</h2>
+        </div>
+    </div>
+</div>
 </body>
+
 </html>
